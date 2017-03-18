@@ -7,6 +7,7 @@ course at University of Pisa.
 
 Implemented through the *Münster Skeleton Library Muesli*.
 
+See more in the `report/report.pdf` file.
 
 ## Lectures
 
