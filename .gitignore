@@ -1,0 +1,11 @@
+#
+# Directories
+#
+/bin/*
+!/bin/.gitkeep
+
+#
+# Files
+#
+mpd.hosts
+notes.txt

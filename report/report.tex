@@ -1,0 +1,65 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+
+% margins and line spacing
+\usepackage{setspace}
+%\onehalfspacing
+
+% graphics and images
+\usepackage{xcolor}
+\usepackage{graphicx}
+\graphicspath{{graphics/}}
+
+% tabels
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{colortbl}
+
+% hyperlinks
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+
+% begin document **************************************************************
+\begin{document}
+
+% first page ******************************************************************
+\input{include/title}
+\pagebreak
+
+% index ***********************************************************************
+\tableofcontents
+\pagebreak
+
+% introduction ****************************************************************
+\input{include/introduction}
+%\pagebreak
+
+% the game of life ************************************************************
+\input{include/the_game_of_life}
+%\pagebreak
+
+% parallelization *************************************************************
+\input{include/parallelization}
+%\pagebreak
+
+% implementation **************************************************************
+\input{include/implementation}
+%\pagebreak
+
+% results *********************************************************************
+\input{include/risultati}
+\pagebreak
+
+% references ******************************************************************
+\input{include/references}
+%\pagebreak
+
+% END DOCUMENT ****************************************************************
+\end{document}

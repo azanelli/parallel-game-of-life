@@ -1,0 +1,16 @@
+\select@language {italian}
+\contentsline {section}{\numberline {1}Introduzione}{2}{section.1}
+\contentsline {section}{\numberline {2}Il gioco della vita}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Regole}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Algoritmi}{3}{subsection.2.2}
+\contentsline {section}{\numberline {3}Parallelizzazione}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}Bilanciamento del carico di lavoro}{9}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Sincronizzazione}{10}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Lo skeleton: una farm}{13}{subsection.3.3}
+\contentsline {section}{\numberline {4}Implementazione}{14}{section.4}
+\contentsline {subsection}{\numberline {4.1}Principali funzioni e strutture dati}{15}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Compilazione ed esecuzione}{17}{subsection.4.2}
+\contentsline {section}{\numberline {5}Risultati}{19}{section.5}
+\contentsline {subsection}{\numberline {5.1}Misurazione dei tempi}{20}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Esecuzione distribuita su pi\`u macchine}{21}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Esecuzione a pi\`u processi su una macchina}{23}{subsection.5.3}

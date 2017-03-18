@@ -1,0 +1,106 @@
+\section{Implementazione}
+\label{sec:implementation}
+L'applicazione \`e stata implementata in linguaggio \texttt{C++} con il supporto della libreria di skeleton Muesli \cite{bib:ref3} per la parte di parallelizzazione. Grazie a questa libreria \`e possibile scrivere un'applicazione parallela come se si stesse scrivendo una normale applicazione sequenziale, in particolare \`e stata sfruttata la parte di libreria sugli skeleton per implementare la farm. La struttura del programma di per se \`e molto semplice: la funzione \texttt{main} inizializza la matrice iniziale e costruisce una farm utilizzando la libreria Muesli, passandogli una funzione \texttt{init()} per lo stage iniziale, una funzione \texttt{compute()} per i workers ed una funzione \texttt{fin()} per lo stage finale, dopodich\`e ``avvia'' l'esecuzione della farm. La funzione \texttt{init} divide la matrice iniziale in blocchi ed invia un blocco ad ogni worker. La funzione \texttt{compute} (che viene eseguita da ogni worker) esegue \textit{n} iterazioni sul blocco (con \textit{n} parametro del programma) sincronizzandosi con gli altri workers alla fine di ogni iterazione. Infine la funzione \texttt{fin} riceve i blocchi dai workers e li riassembla costruendo la matrice finale. A supporto di tutto sono state implementate tre strutture dati: \texttt{Matrix}, \texttt{Block} e \texttt{Vector}, per rappresentare rispettivamente la matrice del gioco della vita, i blocchi in cui dividere la matrice e i vettori all'interno dei blocchi che dovranno essere sincronizzati.
+
+\subsection{Principali funzioni e strutture dati}
+Siano \textit{n} il numero di iterazioni che l'applicazione deve eseguire e \textit{w} il numero di workers della farm. Di seguito sono riportati i passi in dettaglio di ogni funzione e una descrizione delle tre strutture dati.
+
+\subsubsection*{int main(int argc, char* argv[])}
+La funzione \texttt{main} compie i seguenti passi:
+\begin{enumerate}
+  \item Inizializza gli skeleton della libreria Muesli.
+  \item Legge ed inizializza i parametri dell'applicazione.
+  \item Cotruisce la farm utilizzando la libreria Muesli.
+  \item Avvia l'esecuzione della farm.
+  \item Se non si sono verificati errori ``chiude'' la libreria Muesli e termina l'esecuzione.
+\end{enumerate}
+
+\subsubsection*{Block* init(Empty)}
+La funzione \texttt{init} viene eseguita dallo stage iniziale della farm, non prende argomenti in input, il suo output \`e l'input di un worker (ad ogni invocazione crea un input per un worker differente). La funzione divide la matrice in \textit{w} blocchi e restituisce un blocco alla volta ogni volta che \`e invocata, fino a quando non li ha restituiti tutti, a quel punto torna \texttt{NULL}.
+
+\subsubsection*{Block* compute(Block* input)}
+La funzione \texttt{compute} \`e la funzione eseguita dai workers, prende l'input dallo stage iniziale e restituisce l'output per lo stage finale (funzione \texttt{fin}):
+\begin{enumerate}
+  \item Comunica con gli altri workers per scoprire chi ha il blocco precedente al suo (il vicino sinistro) e chi ha il blocco successivo (il vicino destro) attraverso la funzione \texttt{discoverNeighbors}. Queste informazioni serviranno al momento della sincronizzazione.
+  \item Per \textit{n} volte esegue una computazione sul blocco e sincronizza i vettori del blocco comunicando con i workers ``vicini''.
+  \item Restituisce il blocco su cui sono state eseguite \textit{n} iterazioni.
+\end{enumerate}
+
+\subsubsection*{void fin(Block* input)}
+La funzione \texttt{fin} riceve in input i blocchi restituiti dai workers. Questa funzione non fa altro che costruire la matrice finale componendo nell'ordine esatto i blocchi che gli arrivano in input.
+
+\subsubsection*{void discoverNeighbors()}
+Questa funzione viene utilizzata da tutti i workers prima di iniziare la computazione per scoprire i PE vicini (ovvero quelli a cui sono stati assegnati i blocchi precedente e successivo al suo). Viene utilizzata la funzione \texttt{MPI\_Allgather} di MPI per eseguire un broadcast di un vettore di coordinate: ogni PE invia attraverso tale funzione una coppia \texttt{<\textit{ID del blocco},\textit{ID del PE}>} e ricever\`a, sempre dalla stessa funzione, un vettore con le coppie di tutti i workers; sapendo che il vettore contiene una serie di coppie e conoscendo l'ID del proprio blocco, ogni PE effettua una scansione di tale vettore per ricavare l'ID dei processi che hanno il blocco precedente e il blocco successivo.
+
+\subsubsection*{Matrix}
+La classe \texttt{Matrix} rappresenta la matrice del gioco della vita attraverso un array bidimensionale di \texttt{bool}. La classe viene cotruita passandogli le dimensioni della matrice (numero di righe e di colonne) e la densit\`a, un valore tra 0 e 1 che rappresenta la proporzione tra celle vive e celle morte all'interno della matrice; le celle vengono quindi inizializzate in modo casuale tenendo conto della densit\`a, assegnando il valore \texttt{true} alle celle vive e \texttt{false} alle celle morte.
+
+Attraverso il metodo \texttt{getBlock}, specificando il numero di blocchi in cui dividere la matrice e l'indice del blocco che si vuole estrarre dalla matrice, costruisce e restituisce il blocco richiesto in un oggetto di tipo \texttt{Block}. Con il metodo \texttt{setBlock} prende invece in input un oggetto di tipo \texttt{Block} e sostuituisce parte dei suoi elementi con quelli interni al blocco.
+
+\subsubsection*{Block}
+La classe \texttt{Block} rappresenta un blocco che viene ricavato dalla matrice iniziale ed inviato ai workers per la computazione. Implementa l'interfaccia \texttt{MSL\_Serializable} per poter essere utilizzato come input e output negli skeleton della libreria Muesli, tale iterfaccia prevede infatti che vengano implementati alcuni metodi che permettono di trasformare l'oggetto in una sequenza di byte tale che possa essere trasmessa tra un PE e l'altro.
+
+Al suo interno \`e composta da un array bidimensionale di \texttt{bool} per mantenere la fetta di matrice interna al blocco, e da due oggetti di tipo \texttt{Vector} che rappresentano i vettori sinistro e destro del blocco (che devono essere aggiornati ad ogni iterazione).
+
+Attraverso il metodo \texttt{compute} viene eseguita una iterazione dell'algoritmo del gioco della vita sul blocco. Con i metodi \texttt{getLeftBoundary} e \texttt{getRight Boundary} restituisce rispettivamente il bordo sinistro e il bordo destro del blocco in oggetti di tipo \texttt{Vector}; con i metodi \texttt{setLeftVector} e \texttt{setRight Vector} permette di impostare rispettivamente il vettore sinistro e il vettore destro interni al blocco. Questi ultimi quattro metodi sono utilizzati per la fase di sincronizzazione.
+
+\subsubsection*{Vector}
+Rappresenta un vettore interno ad un blocco, percui non \`e altro che un array di \texttt{bool}. Anche questa classe implementa l'interfaccia \texttt{MSL\_Serializable} poich\'e oggetti di questo tipo devono essere scambiati tra i workers durante la fase di sincronizzazione.
+
+\subsection{Compilazione ed esecuzione}
+Essendo l'applicazione basata su Muesli, quindi su MPI, per compilarla ed eseguirla l'applicazione \`e necessario utilizzare l'ambiente MPICH2 \cite{bib:ref5} (utilizzato come implementazione di MPI).
+
+\subsubsection*{Compilazione}
+Per compilare il programma e creare l'eseguibile \texttt{game-of-life} si deve dare il seguente comando all'interno della cartella con i files sorgenti:
+\begin{verbatim}
+  $ mpicxx -fpermissive -I muesli/ gameoflife.cpp \
+        -o ./bin/game-of-life
+\end{verbatim}
+e l'eseguibile viene creato all'interno della cartella \texttt{bin}.
+
+\subsubsection*{Parametri}
+Per l'esecuzione \`e necessario passare alcuni parametri obbligatori in input all'applicazione, altri invece sono facoltativi:
+\begin{description}
+  \item[-h] stampa su standard output l'elenco dei parametri dell'applicazione.
+  \item[-r] numero di righe della matrice (obbligatorio).
+  \item[-c] numero di colonne della matrice (obbligatorio).
+  \item[-d] desit\`a delle celle vive nella matrice iniziale (numero tra 0 e 1).
+  \item[-i] numero di iterazioni da eseguire (default 1).
+  \item[-p] stampa su standard output la matrice iniziale e la matrice finale.
+  \item[-t] stampa su standard output i tempi di esecuzione di ogni PE.
+\end{description}
+
+\subsubsection*{Esecuzione su una macchina}
+Per eseguire l'applicazione su una singola macchina (con pi\`u processi paralleli) si deve innanzitutto avviare il demone di mpich2.
+\begin{verbatim}
+  $ mpd &
+  $ mpdtrace
+\end{verbatim}
+Con il primo comando si avvia il demone, con il secondo si controlla che sia effettivamente in esecuzione, e dovrebbe restituire il nome della macchina su cui \`e stato lanciato. Dopodich\`e si pu\`o eseguire il programma con
+\begin{verbatim}
+  $ mpiexec -n <numero processi> ./game-of-life <parametri>
+\end{verbatim}
+specificando il numero di processi che si vogliono coinvolgere nell'esecuzione e i parametri dell'applicazione. Il numero di processi deve essere almeno 3: uno per lo stage iniziale, uno per lo stage finale, ed almeno un worker. Con il comando
+\begin{verbatim}
+  $ mpdallexit
+\end{verbatim}
+si termina il demone \texttt{mpd}.
+
+\subsubsection*{Esecuzione su pi\`u macchine}
+Per eseguire l'applicazione su pi\`u macchine bisogna semplicemente configurare mpich2 per farlo, di seguito sono descritti brevementi i passi necessari, ma maggiori dettagli (soprattutto sull'esatta configurazione delle macchine coinvolte) si possono trovare in modo dettagliato nella documentazione di mpich2 \cite{bib:ref6}.
+
+Innanzitutto si deve creare il file \texttt{mpd.hosts} nel quale vanno messi i nomi delle macchine sulle quali si vuole eseguire l'applicazione\footnote{Ovviamente tali macchine devono essere opportunamente configurate \cite{bib:ref6}}, con un nome per riga. Dopodich\'e si pu\`o lanciare il demone \texttt{mpd} su tali macchine con il comando
+\begin{verbatim}
+  $ mpdboot -n <numero di macchine> -f mpd.hosts
+\end{verbatim}
+dove il numero di macchine dev'essere minore o uguale a 1 pi\`u il numero di macchine nel file mpd.hosts. Con il comando \texttt{mpdtrace} si pu\`o verificare che il demone sia stato lanciato correttamente su tutte le macchine, a tale comando dovrebbe corrispondere la lista degli hostname delle macchine coinvolte.
+
+Se il demone \`e in esecuzione correttamente su tutte le macchine, l'applicazione si pu\`o eseguire allo stesso modo che in una singola macchina, con il comando
+\begin{verbatim}
+  $ mpiexec -n <numero processi> ./game-of-life <parametri>
+\end{verbatim}
+Infine, con il comando
+\begin{verbatim}
+  $ mpdallexit
+\end{verbatim}
+si terminano i demoni \texttt{mpd} su tutte le macchine.

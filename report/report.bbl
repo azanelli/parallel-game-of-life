@@ -1,0 +1,71 @@
+\begin{thebibliography}{10}
+
+\bibitem{art:andreetta}
+Maria Andreetta.
+\newblock {Identity e access management. L'ora della centralizzazione}.
+\newblock {\em Lineaedp}.
+
+\bibitem{book:atzeni_ceri_paraboschi_torlone}
+Paolo Atzeni, Stefano Ceri, Stefano Paraboschi, and Riccardo Torlone.
+\newblock {\em {Basi di dati. Concetti, linguaggi e architetture}}.
+\newblock {McGraw-Hill}, 1996.
+
+\bibitem{inp:calabritto}
+Virginia Calabritto.
+\newblock {Le Infrastrutture di Autenticazione e Autorizzazione (AAI) e IDEM}.
+\newblock Giugno 2008.
+
+\bibitem{man:de_marco}
+Rocco De~Marco.
+\newblock {\em {AAA in ambiente OpenSource: PPPoE, LDAP, RADIUS}}, 2006.
+
+\bibitem{man:ferroni}
+Luca Ferroni.
+\newblock {\em {Autenticazione centralizzata con OpenLDAP}}.
+\newblock
+  {\url{http://www.bo.cnr.it/corsi-di-informatica/seminarioldap/Autenticazione%
+\%20centralizzata\%20con\%20OpenLDAP.pdf}}.
+
+\bibitem{man:mantovani}
+Maria~Laura Mantovani.
+\newblock {\em {IDEntity Management federato per l'accesso ai servizi}}.
+\newblock {Universit\`a di Modena e Reggio Emilia}.
+\newblock
+  {\url{http://www.garr.it/eventiGARR/ws08/presentazioni/Tutorial\%20-\%20IDEM%
+/Mantovani\_WSGARR08.pdf}}.
+
+\bibitem{man:panella}
+Marco Panella.
+\newblock {\em {Identity and Access Management (IAM) e Authentication and
+  Authorization Infrastructure (AAI) in ambiente federato}}, 2008.
+\newblock {\url{www.siti.unipr.it/?download=IAM\_AAI\_20080512.ppt}}.
+
+\bibitem{book:paterno_sso}
+Giuseppe Patern\`o.
+\newblock {\em {Single Sign-On con Kerberos e LDAP}}.
+\newblock Giuseppe Patern\`o, 2004.
+
+\bibitem{man:radesca}
+Antonio Radesca.
+\newblock {\em {OpenLDAP}}, 2002.
+\newblock
+  {\url{http://www.dia.unisa.it/~ads/corso-security/www/CORSO-0203/openLDAP.pd%
+f}}.
+
+\bibitem{inp:schiaratura}
+Omar Schiaratura.
+\newblock {Reti miste Linux-Windows con autenticazioni centralizzate}.
+\newblock Novembre 2005.
+\newblock {\url{http://www.omarschiaratura.it/file/sec\_day2005.pdf}}.
+
+\bibitem{book:tanenbaum}
+Andrew~S. Tanenbaum.
+\newblock {\em {Reti di calcolatori}}.
+\newblock {Pearson Education Italia}, 2005.
+
+\bibitem{web:wikipedia_ldap}
+Wikipedia.
+\newblock {Lightweight Directory Access Protocol}.
+\newblock {\url{http://en.wikipedia.org/wiki/Ldap}}.
+
+\end{thebibliography}
